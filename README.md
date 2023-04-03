@@ -11,6 +11,6 @@ Contains projects, asignments and exercises I've completed during semester 4 of 
    - Develop MVC model web application using Spring, HTML, CSS, Boostrap and JavaScript.
    - Source code available [here](https://github.com/chewzzz1014/CSC3402-Database-App-Dev)
 5. **CSC4502 CRYPTOGRAPHY**
-   - Simulating
+   - Simulating encryption and decryption (mainly using Python)
 6. **CSC3600 ARTIFICIAL INTELLIGENCE**
    - Prolog programming
