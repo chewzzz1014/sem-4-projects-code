@@ -1,20 +1,8 @@
-# AUTHOR: Chew Zi Qing
-
-# textbook 3.32
-# question Write a program that can encrypt and decrypt using the general Caesar cipher, also known as an additive cipher.
-# key as input
-# present the program in class by using 5 data to be encrypted or decrypted.
+# demonstrate encryption and decryption using Caesar cipher
+# user can either input their plain text/cipher text and key, or just run 5 random data
 
 import sys
 import random
-
-'''
-"The quick brown fox jumps over the lazy dog", "Gur dhvpx oebja sbk whzcf bire gur ynml qbt"
-"A penny saved is a penny earned", "N craar fnirq vf n craar raqvaqned"
-"The early bird catches the worm", "Gur rneyl oveq pbagnvaf gur jbez"
-"Practice makes perfect", "Cenpgvpr znxrf cersrengvba"
-"To be or not to be, that is the question", "Gb or be abg gb or, gung vf gur dhrfgvba"
-'''
 
 
 class DefaultValue:
