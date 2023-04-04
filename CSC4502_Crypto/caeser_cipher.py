@@ -15,10 +15,11 @@ import random
 "Practice makes perfect", "Cenpgvpr znxrf cersrengvba"
 "To be or not to be, that is the question", "Gb or be abg gb or, gung vf gur dhrfgvba"
 '''
+
+
 class DefaultValue:
-    def __init__(self, n):
-        self.n = n
-        self.random_keys = [random.randint(0, 25) for i in range(self.n)]
+    def __init__(self):
+        self.random_keys = [random.randint(0, 25) for i in range(5)]
         self.random_cipher = [
             "Gur dhvpx oebja sbk whzcf bire gur ynml qbt",
             "N craar fnirq vf n craar raqvaqned",
@@ -31,7 +32,7 @@ class DefaultValue:
             "A penny saved is a penny earned",
             "The early bird catches the worm",
             "Practice makes perfect",
-            "To be or not to be, that is the question",
+            "To be or not to be, that is the question"
         ]
 
 
@@ -48,10 +49,10 @@ class CaesarCipher:
 
     # C = E(K, p) = (p+K) mod 26
     def encrypt(self, K, p):
-        plain_text = list(p)
+        plain_text = list(p.lower())
         cipher_arr = []
         for item in plain_text:
-            if item == ' ':
+            if item not in self.alphabets:
                 cipher_arr.append(item)
             else:
                 current_idx = self.alphabets.index(item)
@@ -61,13 +62,13 @@ class CaesarCipher:
 
     # p = D(k, C) = (C-K) mod 26
     def decrypt(self, k, C):
-        cipher_text = list(C)
+        cipher_text = list(C.lower())
         plain_arr = []
         for item in cipher_text:
-            if item == ' ':
+            if item not in self.alphabets:
                 plain_arr.append(item)
             else:
-                current_idx = self.alphabets.index(item.lower())
+                current_idx = self.alphabets.index(item)
                 shifted_idx = (current_idx - k) % 26
                 plain_arr.append((self.alphabets[shifted_idx]))
         return "".join(plain_arr)
@@ -91,13 +92,42 @@ class CaesarCipher:
 
 if __name__ == '__main__':
     test_caesar = CaesarCipher()
+    dv = DefaultValue()
 
     option = int(input('Encryption (1) or Decryption (2)? '))
+    automationRun = int(input('Run 5 random data? (0 for no, 1 for yes): '))
+
     if option == 1:
-        [input_plain_text, input_key] = test_caesar.get_input(1)
-        print('Cipher text is', test_caesar.encrypt(input_key, input_plain_text))
+        if automationRun == 0:
+            [input_plain_text, input_key] = test_caesar.get_input(1)
+            print('Cipher text: ', test_caesar.encrypt(input_key, input_plain_text))
+        elif automationRun == 1:
+            print('\n****************************************************************')
+            for i in range(5):
+                input_plain_text = dv.random_plain[i]
+                input_key = dv.random_keys[i]
+                print('Plain Text {}: {}'.format((i+1), input_plain_text))
+                print('Key: {}'.format(input_key))
+                print('Cipher text: ', test_caesar.encrypt(input_key, input_plain_text))
+                print('****************************************************************')
+        else:
+            print('Invalid Input! Try again.')
+            sys.exit(1)
     elif option == 2:
-        [input_cipher_text, input_key] = test_caesar.get_input(2)
-        print('Plain text: ', test_caesar.decrypt(input_key, input_cipher_text))
+        if automationRun == 0:
+            [input_cipher_text, input_key] = test_caesar.get_input(2)
+            print('Plain text: ', test_caesar.decrypt(input_key, input_cipher_text))
+        elif automationRun == 1:
+            print('\n****************************************************************')
+            for i in range(5):
+                input_cipher_text = dv.random_cipher[i]
+                input_key = dv.random_keys[i]
+                print('Cipher Text {}: {}'.format((i+1), input_cipher_text))
+                print('Key: {}'.format(input_key))
+                print('Plain text: ', test_caesar.decrypt(input_key, input_cipher_text))
+                print('****************************************************************')
+        else:
+            print('Invalid Input! Try again.')
+            sys.exit(1)
     else:
         print('Invalid Input! Try again.')
