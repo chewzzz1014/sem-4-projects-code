@@ -1,0 +1,55 @@
+
+        html{
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: antiquewhite;
+        }
+        header{
+            display: flex;
+            justify-content: center;
+            margin: 2em 0em;
+        }
+        img{
+            border: 1px solid black;
+            padding: 25px;
+            border-radius: 50%;
+        }
+        h1{
+            margin-left: 3em;
+            font-size: 50px;
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .input-field{
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+        .btn{
+            display: flex;
+            justify-content: flex-end;
+            gap: 2em;
+        }
+        label{
+            font-size: 25px;
+        }
+        button{
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 5px;
+        }
+        input{
+            height: 30px;
+            width: 300px;
+            margin-bottom: 20px;
+        }
