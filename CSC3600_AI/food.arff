@@ -1,0 +1,29 @@
+@relation PreferenceData
+
+@attribute price {low, medium, high}
+@attribute portion {small, big}
+@attribute cuisine {italian, mexican, chinese, indian}
+@attribute flavor {sweet, savory, spicy}
+@attribute like_food {yes, no}
+
+@data
+low, small, italian, savory, yes
+medium, big, mexican, spicy, no
+high, big, chinese, savory, yes
+medium, small, indian, spicy, no
+low, small, italian, sweet, yes
+medium, big, mexican, savory, no
+high, big, chinese, spicy, yes
+medium, small, indian, sweet, no
+low, small, italian, spicy, yes
+medium, big, mexican, sweet, no
+high, big, chinese, savory, yes
+medium, small, indian, spicy, no
+low, small, italian, sweet, yes
+medium, big, mexican, savory, no
+high, big, chinese, spicy, yes
+medium, small, indian, sweet, no
+low, small, italian, savory, yes
+medium, big, mexican, spicy, no
+high, big, chinese, sweet, yes
+medium, small, indian, savory, no
