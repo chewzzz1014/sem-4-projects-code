@@ -472,7 +472,7 @@ for (int i=0; i<down.length; i++) {
   // ************************ MAKE PREDICTION ************************************
   Serial.println("Classifying input ...");
 
-  float input[] = { 3.0, 3.0 };
+  float input[] = { 1.3, 5.2, -9.8 };
 
   int classification = myKNN.classify(input, 3); // classify input with K=3
   float confidence = myKNN.confidence();
