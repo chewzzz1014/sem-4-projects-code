@@ -10,8 +10,8 @@
 
   This example code is in the public domain.
 */
-#include <string>
 #include <Arduino_KNN.h>
+#include <Arduino.h>
 
 // Create a new KNNClassifier, input values are array of N (floats),
 KNNClassifier myKNN(3);
@@ -29,12 +29,12 @@ void setup() {
 
 
 // ************************* DEFINE CLASSESS ************************
-string directions[] = {"left", "right", "up", "down"};
+String directions[] = {"left", "right", "up", "down"};
 
 
 
 // **************************** DATA *********************************
-float left[45][3] = {
+float left[46][3] = {
         {0.05, -0.17, 1.06},
         {0.05, -0.17, 1.06},
         {0.05, -0.16, 1.06},
@@ -83,7 +83,7 @@ float left[45][3] = {
         {-0.11, 0.23, 1.02}
     };
 
-  float right[99][3] = {
+  float right[100][3] = {
         {0.12, 0.12, 1.05},
         {0.11, 0.13, 1.05},
         {0.09, 0.15, 1.07},
@@ -186,7 +186,7 @@ float left[45][3] = {
         {0.03, 0.04, 1.08}
     };
 
-  float up[79][3] = {
+  float up[80][3] = {
     {-0.17, 0.97, 0.13},
     {-0.16, 0.99, 0.11},
     {-0.18, 0.99, 0.12},
@@ -343,7 +343,7 @@ float down[154][3] = {
     {0.26,-0.92,-0.07},
     {0.19,-0.99,0.08},
     {0.30,-0.89,0.14},
-    -{0.16,-0.62,-0.05},
+    {-0.16,-0.62,-0.05},
     {0.30,-0.91,-0.11},
     {0.30,-0.98,-0.02},
     {0.32,-0.96,-0.17},
@@ -424,7 +424,7 @@ float down[154][3] = {
     {0.27,-0.95,0.04},
     {0.26,-0.98,0.06},
     {0.29,-0.98,0.00}
-}
+};
 
 // **************************** TRAIN MODEL ****************************
 
@@ -438,19 +438,24 @@ float down[154][3] = {
 //   myKNN.addExample(example2, 5); // add example for class 5
 //   myKNN.addExample(example3, 9); // add example for class 9
 //   myKNN.addExample(example4, 5); // add example for class 5 (again)
-for (int i=0; i<left.length; i++) {
+
+int numRowsLeft = sizeof(left) / sizeof(left[0]);
+for (int i=0; i<numRowsLeft; i++) {
     myKNN.addExample(left[i], 0);
 }
 
-for (int i=0; i<right.length; i++) {
+int numRowsRight = sizeof(right) / sizeof(right[0]);
+for (int i=0; i<numRowsRight; i++) {
   myKNN.addExample(right[i], 1);
 }
 
-for (int i=0; i<up.length; i++) {
+int numRowsUp = sizeof(up) / sizeof(up[0]);
+for (int i=0; i<numRowsUp; i++) {
   myKNN.addExample(up[i], 2);
 }
 
-for (int i=0; i<down.length; i++) {
+int numRowsDown = sizeof(down) / sizeof(down[0]);
+for (int i=0; i<numRowsDown; i++) {
   myKNN.addExample(down[i], 3);
 }
 
