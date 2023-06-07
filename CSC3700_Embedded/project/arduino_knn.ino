@@ -1,39 +1,15 @@
-/*
-  SimpleKNN
-
-  This example demonstrates how to use the Arduino KNN library.
-
-  It creates a KNN classifier that expects an input array of 2 (floats).
-  Then adds 4 example inputs with their respective classifications.
-  After this it demonstrates how to classify an input value and get
-  the classifications confidence.
-
-  This example code is in the public domain.
-*/
+// import library for ADXL345 accelerometer, Arduino KNN and LCM1602 LCD
 #include <Arduino_KNN.h>
 #include <Arduino.h>
+#include <Wire.h>
+#define ADXL345_ADDRESS (0xA6 >> 1) 
+#define ADXL345_REGISTER_XLSB (0x32)
 
+// store data from sensor
+int accelerometer_data[3];
 // Create a new KNNClassifier, input values are array of N (floats),
 KNNClassifier myKNN(3);
-
-void setup() {
- // **************************** SETUP *********************************
-  Serial.begin(9600);
-  while (!Serial);
-
-  Serial.println("Simple KNN");
-  Serial.println();
-
-  Serial.print("Adding examples to myKNN ... ");
-  Serial.println();
-
-
-// ************************* DEFINE CLASSESS ************************
-String directions[] = {"left", "right", "up", "down"};
-
-
-
-// **************************** DATA *********************************
+// data for training model
 float left[20][3] = {
         {0.05, -0.17, 1.06},
         {0.05, -0.17, 1.06},
@@ -125,6 +101,31 @@ float down[20][3] = {
     {-0.03,-0.92,0.41},
     {-0.03,-0.93,0.43}
 };
+// define prediction classes
+String directions[] = {"left", "right", "up", "down"};
+
+// train arduino knn model. Each direction has 20 data
+void trainModel() {
+  // int numRowsLeft = sizeof(left) / sizeof(left[0]);
+  for (int i=0; i<20; i++) {
+      myKNN.addExample(left[i], 0);
+  }
+  for (int i=0; i<20; i++) {
+    myKNN.addExample(right[i], 1);
+  }
+  for (int i=0; i<20; i++) {
+    myKNN.addExample(up[i], 2);
+  }
+  for (int i=0; i<20; i++) {
+    myKNN.addExample(down[i], 3);
+  }
+}
+
+void setup() {
+ // **************************** SETUP *********************************
+  Serial.begin(9600);
+  while (!Serial);
+
 
 // **************************** TRAIN MODEL ****************************
 
@@ -138,26 +139,6 @@ float down[20][3] = {
 //   myKNN.addExample(example2, 5); // add example for class 5
 //   myKNN.addExample(example3, 9); // add example for class 9
 //   myKNN.addExample(example4, 5); // add example for class 5 (again)
-
-int numRowsLeft = sizeof(left) / sizeof(left[0]);
-for (int i=0; i<numRowsLeft; i++) {
-    myKNN.addExample(left[i], 0);
-}
-
-int numRowsRight = sizeof(right) / sizeof(right[0]);
-for (int i=0; i<numRowsRight; i++) {
-  myKNN.addExample(right[i], 1);
-}
-
-int numRowsUp = sizeof(up) / sizeof(up[0]);
-for (int i=0; i<numRowsUp; i++) {
-  myKNN.addExample(up[i], 2);
-}
-
-int numRowsDown = sizeof(down) / sizeof(down[0]);
-for (int i=0; i<numRowsDown; i++) {
-  myKNN.addExample(down[i], 3);
-}
 
 
 
