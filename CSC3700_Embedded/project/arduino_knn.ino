@@ -6,7 +6,7 @@
 #define ADXL345_REGISTER_XLSB (0x32)
 
 // store data from sensor
-int accelerometer_data[3];
+float accelerometer_data[3];
 // Create a new KNNClassifier, input values are array of N (floats),
 KNNClassifier myKNN(3);
 // data for training model
@@ -105,6 +105,7 @@ float down[20][3] = {
 String directions[] = {"left", "right", "up", "down"};
 
 // train arduino knn model. Each direction has 20 data
+// 0=left; 1=right; 2=up; 3=down;
 void trainModel() {
   // int numRowsLeft = sizeof(left) / sizeof(left[0]);
   for (int i=0; i<20; i++) {
@@ -121,50 +122,100 @@ void trainModel() {
   }
 }
 
+// writes data to the slave's buffer
+void i2c_write(int address, byte reg, byte data) {
+  // Send output register address
+  Wire.beginTransmission(address);
+  // Connect to device
+  Wire.write(reg);
+  // Send data
+  Wire.write(data); //low byte
+  Wire.endTransmission();
+}
+
+// microcontroller reads data from the sensor's input register
+void i2c_read(int address, byte reg, int count, byte* data) {
+  // Used to read the number of data received
+  int i = 0;
+  // Send input register address
+  Wire.beginTransmission(address);
+  // Connect to device
+  Wire.write(reg);
+  Wire.endTransmission();
+  // Connect to device
+  Wire.beginTransmission(address);
+  // Request data from slave
+  // Count stands for number of bytes to request
+  Wire.requestFrom(address, count);
+  while(Wire.available()) // slave may send less than requested
+  {
+    char c = Wire.read(); // receive a byte as character
+    data[i] = c;
+    i++;
+  }
+  Wire.endTransmission();
+}
+
+void init_adxl345() {
+  byte data = 0;
+  i2c_write(ADXL345_ADDRESS, 0x31, 0x0B);   // 13-bit mode  +_ 16g
+  i2c_write(ADXL345_ADDRESS, 0x2D, 0x08);   // Power register
+  i2c_write(ADXL345_ADDRESS, 0x1E, 0x00);   // x
+  i2c_write(ADXL345_ADDRESS, 0x1F, 0x00);   // Y
+  i2c_write(ADXL345_ADDRESS, 0x20, 0x05);   // Z
+  // Check to see if it worked!
+  i2c_read(ADXL345_ADDRESS, 0X00, 1, &data);
+  if(data==0xE5)
+    Serial.println("it work Success");
+  else
+    Serial.println("it work Fail");
+}
+
+void read_adxl345() {
+  byte bytes[6];
+  memset(bytes,0,6);
+  // Read 6 bytes from the ADXL345
+  i2c_read(ADXL345_ADDRESS, ADXL345_REGISTER_XLSB, 6, bytes);
+  // Unpack data
+  for (int i=0;i<3;++i) {
+    accelerometer_data[i] = (int)bytes[2*i] + (((int)bytes[2*i + 1]) << 8);
+  }
+}
+
 void setup() {
- // **************************** SETUP *********************************
   Serial.begin(9600);
-  while (!Serial);
 
-
-// **************************** TRAIN MODEL ****************************
-
-// add examples to KNN
-//   float example1[] =    {7.0, 7.0 };
-//   float example2[] = { 5.0, 5.0 };
-//   float example3[] = { 9.0, 9.0 };
-//   float example4[] = { 5.0, 5.0 };
-
-//   myKNN.addExample(example1, 7); // add example for class 7
-//   myKNN.addExample(example2, 5); // add example for class 5
-//   myKNN.addExample(example3, 9); // add example for class 9
-//   myKNN.addExample(example4, 5); // add example for class 5 (again)
-
-
-
-// ************************* PRINT OUT KNN COUNT *******************************
-  // get and print out the KNN count
+  // start arduino knn training
+  while (!Serial); 
+  trainModel();
   Serial.print("\tmyKNN.getCount() = ");
   Serial.println(myKNN.getCount());
   Serial.println();
 
-  // you can also print the counts by class
-  //  Serial.print("\tmyKNN.getCountByClass(5) = ");
-  //  Serial.println(myKNN.getCountByClass(5)); // expect 2
+  // setup ADXL345  
+  Wire.begin();
+  Serial.begin(9600);
+  for(int i=0; i<3; ++i) {
+    accelerometer_data[i]  = 0;
+  }
+}
+
+void loop() {
+  // PART 1: Read Data From Sensor
+  Serial.println("Reading data from sensor ...");
+  read_adxl345();
+  // normalize data
+  for (int i=0; i<3; i++) {
+    accelerometer_data[i] = float(accelerometer_data[i])*3.9/1000;
+  }
 
 
-
-
-  // ************************ MAKE PREDICTION ************************************
+  // PART 2: Make Prediction
   Serial.println("Classifying input ...");
 
- // predict incoming sensor data
-  float input[] = { 1.3, 0.2, -0.98 };
+  int classification = myKNN.classify(accelerometer_data, 3); // classify input with K=3
+  float confidence = myKNN.confidence(); // get confidence score
 
-  int classification = myKNN.classify(input, 3); // classify input with K=3
-  float confidence = myKNN.confidence();
-
-  // print the classification and confidence
   Serial.print("\tclassification = ");
   Serial.println(classification);
 
@@ -172,8 +223,9 @@ void setup() {
   // expect the confidence to be: 2/3 = ~0.67
   Serial.print("\tconfidence     = ");
   Serial.println(confidence);
-}
 
-void loop() {
-  // do nothing
+  // PART 3: Display prediction result to LCD
+  // TODO
+
+  delay(5000); // at every 5s interval
 }
