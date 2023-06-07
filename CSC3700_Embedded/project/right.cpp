@@ -1,7 +1,7 @@
 #include <iostream>
 
 void main() {
-    float right[99][3] = {
+    float right[100][3] = {
         {0.12, 0.12, 1.05},
         {0.11, 0.13, 1.05},
         {0.09, 0.15, 1.07},
