@@ -1,3 +1,4 @@
+// CSC3700 Embedded Programming Group 6: Gesture Recognition 
 #include <Wire.h>
 #include <Arduino_KNN.h>
 #include <LiquidCrystal_I2C.h>
@@ -11,12 +12,15 @@
 #define LCD_COLS 16
 #define LCD_ROWS 2
 
+// Initialize LCD
 LiquidCrystal_I2C lcd(LCD_I2C_ADDR, LCD_COLS, LCD_ROWS);
 
 // Create a new KNNClassifier, input values are array of 3 (floats) for x, y, z coordinates
 KNNClassifier classifier(3);
+// Store accelerometer data
 float sample[3];
 
+// Reads data from the sensor's input register
 void i2c_read(int address, byte reg, int count, byte* data) {
   Wire.beginTransmission(address);
   Wire.write(reg);
@@ -32,6 +36,8 @@ void i2c_read(int address, byte reg, int count, byte* data) {
   }
   Wire.endTransmission();
 }
+
+// Writes data to the slave's buffer
 void i2c_write(int address, byte reg, byte data) {
 
   // Send output register address
@@ -43,6 +49,7 @@ void i2c_write(int address, byte reg, byte data) {
   Wire.endTransmission();
 }
 
+// Read accelerometer data and store into sample array
 void read_adxl345() {
   byte bytes[6];
   memset(bytes,0,6);
@@ -54,6 +61,8 @@ void read_adxl345() {
     sample[i] = (int)bytes[2*i] + (((int)bytes[2*i + 1]) << 8);
   }
 }
+
+// Setup ADXL345 accelerometer
 void init_adxl345() {
   byte data = 0;
 
@@ -72,6 +81,8 @@ void init_adxl345() {
   else
     Serial.println("it work Fail");
 }
+
+// Setup LCD, train Arduino KNN model
 void setup() {
   Wire.begin();
   Serial.begin(9600);
@@ -87,6 +98,7 @@ void setup() {
   float example3[] = {0, 1000, 0}; // Up
   float example4[] = {0, -1000, 0}; // Down
 
+  // Train data
   classifier.addExample(example1, 0); // Right (label: 0)
   classifier.addExample(example2, 1); // Left (label: 1)
   classifier.addExample(example3, 2); // Up (label: 2)
@@ -97,21 +109,12 @@ void setup() {
   }
   init_adxl345();
 }
+
 void loop() {
   // Read accelerometer data from ADXL345
-//  int16_t x = ((int16_t)bytes[1] << 8) | bytes[0];
-//  int16_t y = ((int16_t)bytes[3] << 8) | bytes[2];
-//  int16_t z = ((int16_t)bytes[5] << 8) | bytes[4];
-  // float x = (bytes[1] << 8) | bytes[0];
-  // float y = (bytes[3] << 8) | bytes[2];
-  // float z = (bytes[5] << 8) | bytes[4];
-
-  // // Create the input sample for prediction
-  // float sample[3] = {x, y, z};
-// Create the input sample for prediction
-//float sample[3] = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
-
   read_adxl345();
+
+  // Print the data
   Serial.println(String(sample[0]) + ", " + String(sample[1]) + ", " + String(sample[2]));
 
   // Predict the label using k-NN algorithm
@@ -129,5 +132,5 @@ void loop() {
   else if (predictedLabel == 3)
     lcd.print("Direction: Down");
 
-  delay(100);
+  delay(1000);
 }
